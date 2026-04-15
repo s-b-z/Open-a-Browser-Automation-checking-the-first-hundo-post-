@@ -1,0 +1,41 @@
+// EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
+const { chromium } = require("playwright");
+//What did firefox and webkit ever do to you? :P lol
+async function sortHackerNewsArticles() {    //She's patient
+  // launch browser
+  const browser = await chromium.launch({ headless: false }); //false headless lets you see it happen
+  const context = await browser.newContext(); // create a new browser context
+  const page = await context.newPage(); // create a new page in the context
+
+  // go to Hacker News
+  await page.goto("https://news.ycombinator.com/newest"); // navigate to the newest page
+const ageElements = await page.locator(".age").all(); // select all elements with the class "age"
+const first100 = ageElements.slice(0, 100); // get the first 100 elements (or all if there are less than 100)
+
+function toMinutes(text) {
+  const [value, unit] = text.split(" ");
+  const num = Number(value);
+  if (unit.startsWith("minute")) return num; 
+  if (unit.startsWith("hour")) return num * 60;
+  if (unit.startsWith("day")) return num * 60 * 24;
+  return 0;
+}
+  let previousTime = 0;
+  for (let i = 0; i < first100.length; i++) {
+    const text = await first100[i]. textContent(); // get the text content of the element
+    const currentTime = toMinutes(text.trim()); // convert the text to minutes
+
+    if(currentTime < previousTime) {
+      throw new Error(`Articles are not sorted correctly at index ${i}`);
+}
+previousTime = currentTime;  // update previousTime for the next iteration
+  }
+  
+  console.log("Articles are sorted correctly by age.");
+  await browser.close(); // close the browser
+} 
+
+
+(async () => {
+  await sortHackerNewsArticles();
+})();
